@@ -1,15 +1,17 @@
-import sys
+import nmap
 
-def main():
-    print("--- TEST INFRASTRUTTURA PYTHON ---")
-    print(f"Versione Interprete: {sys.version.split()[0]}")
-    print(f"Eseguibile in uso: {sys.executable}")
-    
-    # Verifica logica dell'isolamento
-    if ".venv" in sys.executable:
-        print("[SUCCESS] Stai girando nell'ambiente virtuale isolato.")
-    else:
-        print("[FATAL ERROR] Stai usando l'interprete globale di sistema!")
+nm = nmap.PortScanner()
 
-if __name__ == "__main__":
-    main()
+target = "45.33.32.156"
+options = "-sV -sC scan_results"
+
+nm.scan(target, arguments=options)
+
+for host in nm.all_hosts():
+    print("Host: %s (%s)" % (host, nm[host].hostname()))
+    print("State: %s" % nm[host].state())
+    for protocol in nm[host].all_protocols():
+        print("Protocol: %s" % protocol)
+        port_info = nm[host][protocol]
+        for port, state in port_info.items():
+            print("Port: %s\t State: %s" % (port, state))
